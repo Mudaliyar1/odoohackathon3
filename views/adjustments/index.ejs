@@ -43,6 +43,9 @@
                                     <form action="/adjustments/<%= adjustment._id %>/validate" method="POST" style="display: inline;">
                                         <button type="submit" class="btn btn-success btn-sm">Validate</button>
                                     </form>
+                                    <form action="/adjustments/<%= adjustment._id %>/delete" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this stock adjustment?');">
+                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
                                 <% } %>
                             </td>
                         </tr>

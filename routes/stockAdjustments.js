@@ -18,4 +18,7 @@ router.get('/:id', ensureAuthenticated, stockAdjustmentController.stockAdjustmen
 // Validate Stock Adjustment
 router.post('/:id/validate', ensureAuthenticated, stockAdjustmentController.stockAdjustmentValidate);
 
+// Delete Stock Adjustment
+router.post('/:id/delete', ensureAuthenticated, stockAdjustmentController.stockAdjustmentDelete);
+
 module.exports = router;

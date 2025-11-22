@@ -169,3 +169,29 @@ exports.stockAdjustmentValidate = async (req, res) => {
         res.redirect('/adjustments');
     }
 };
+
+// Handle stock adjustment delete on POST.
+exports.stockAdjustmentDelete = async (req, res) => {
+    try {
+        const adjustment = await StockAdjustment.findById(req.params.id);
+
+        if (!adjustment) {
+            req.flash('error_msg', 'Stock Adjustment not found');
+            return res.redirect('/adjustments');
+        }
+
+        // Prevent deletion if the adjustment is not pending
+        if (adjustment.status !== 'pending') {
+            req.flash('error_msg', 'Only pending stock adjustments can be deleted.');
+            return res.redirect('/adjustments/' + adjustment._id);
+        }
+
+        await StockAdjustment.findByIdAndDelete(req.params.id);
+        req.flash('success_msg', 'Stock Adjustment deleted successfully');
+        res.redirect('/adjustments');
+    } catch (err) {
+        console.error(err);
+        req.flash('error_msg', 'Error deleting stock adjustment');
+        res.redirect('/adjustments');
+    }
+};
