@@ -3,6 +3,8 @@ const router = express.Router();
 const deliveryController = require('../controllers/deliveryController');
 const { ensureAuthenticated } = require('../middleware/auth');
 
+router.get('/kanban', ensureAuthenticated, deliveryController.deliveryKanban);
+
 // Get all deliveries
 router.get('/', ensureAuthenticated, deliveryController.deliveryList);
 
@@ -14,6 +16,8 @@ router.post('/create', ensureAuthenticated, deliveryController.deliveryCreatePos
 
 // Get single delivery details
 router.get('/:id', ensureAuthenticated, deliveryController.deliveryDetail);
+
+router.post('/:id/status', ensureAuthenticated, deliveryController.deliveryUpdateStatus);
 
 // Validate delivery
 router.post('/:id/validate', ensureAuthenticated, deliveryController.deliveryValidate);

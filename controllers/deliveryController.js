@@ -307,6 +307,53 @@ exports.deliveryDetail = async (req, res) => {
     }
 };
 
+// Display Kanban board for deliveries.
+exports.deliveryKanban = async (req, res) => {
+    try {
+        const pendingDeliveries = await Delivery.find({ status: 'pending' }).populate('warehouse').populate('createdBy').sort({ createdAt: -1 });
+        const deliveredDeliveries = await Delivery.find({ status: 'delivered' }).populate('warehouse').populate('createdBy').sort({ createdAt: -1 });
+        const cancelledDeliveries = await Delivery.find({ status: 'cancelled' }).populate('warehouse').populate('createdBy').sort({ createdAt: -1 });
+
+        res.render('deliveries/kanban', {
+            title: 'Delivery Kanban',
+            pendingDeliveries,
+            deliveredDeliveries,
+            cancelledDeliveries
+        });
+    } catch (err) {
+        console.error(err);
+        req.flash('error_msg', 'Error fetching deliveries for Kanban board');
+        res.redirect('/dashboard');
+    }
+};
+
+
+// Handle delivery status update on POST.
+exports.deliveryUpdateStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        if (!status) {
+            return res.status(400).json({ success: false, message: 'Status is required.' });
+        }
+
+        const delivery = await Delivery.findById(id);
+        if (!delivery) {
+            return res.status(404).json({ success: false, message: 'Delivery not found.' });
+        }
+
+        // Only allow specific status transitions if needed, or allow all for now
+        delivery.status = status;
+        await delivery.save();
+
+        res.json({ success: true, message: 'Delivery status updated successfully.' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Error updating delivery status.' });
+    }
+};
+
 // Handle delivery validation on POST.
 exports.deliveryValidate = async (req, res) => {
     try {

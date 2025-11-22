@@ -1,6 +1,6 @@
 <div class="container mt-4">
-    <h1 class="mb-4">Internal Transfer Details</h1>
-    <div class="card">
+    <h1 class="mb-4 text-primary fw-bold">Internal Transfer Details</h1>
+    <div class="card shadow-sm rounded-3">
         <div class="card-header">
             Transfer #<%= transfer.documentNumber %>
         </div>
@@ -42,10 +42,10 @@
             </div>
 
             <div class="mt-4">
-                <a href="/internalTransfers" class="btn btn-secondary">Back to Internal Transfers</a>
+                <a href="/internalTransfers" class="btn btn-secondary rounded-pill">Back to Internal Transfers</a>
                 <% if (transfer.status === 'pending') { %>
                     <form action="/internalTransfers/<%= transfer._id %>/validate" method="POST" class="d-inline ms-2">
-                        <button type="submit" class="btn btn-success">Validate Transfer</button>
+                        <button type="submit" class="btn btn-success rounded-pill">Validate Transfer</button>
                     </form>
                 <% } %>
             </div>

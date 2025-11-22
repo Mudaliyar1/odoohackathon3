@@ -1,64 +1,91 @@
-<div class="row mt-5">
-    <div class="col-md-6 m-auto">
-        <div class="card card-body">
-            <h1 class="text-center mb-3"><i class="fas fa-user-plus"></i> Register</h1>
-            <%- include ('../partials/flash') %>
-            <form action="/auth/register" method="POST">
-                <div class="form-group mb-3">
-                    <label for="name">Name</label>
-                    <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        class="form-control"
-                        placeholder="Enter Name"
-                        value="<%= typeof name != 'undefined' ? name : '' %>"
-                    />
+<div class="row mt-5 justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="text-center mb-4">
+    
+</div>
+<div class="card shadow-lg pt-4 pb-4 bg-light rounded-3 border-0">
+            <div class="card-body">
+                <ul class="nav nav-pills nav-justified mb-4" id="ex1" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link rounded-pill" id="tab-login" href="/auth/login">Login</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active rounded-pill" id="tab-register" data-bs-toggle="pill" href="#pills-register" role="tab" aria-controls="pills-register" aria-selected="true">Sign Up</a>
+                    </li>
+                </ul>
+                <h2 class="text-center mb-4">Create an Account</h2>
+
+                <%- include ('../partials/flash') %>
+                <form action="/auth/register" method="POST">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            class="form-control"
+                            placeholder="Your Name"
+                            value="<%= typeof name != 'undefined' ? name : '' %>"
+                            required
+                        />
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            class="form-control"
+                            placeholder="Enter your email"
+                            value="<%= typeof email != 'undefined' ? email : '' %>"
+                            required
+                        />
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            class="form-control"
+                            placeholder="Create a password"
+                            value="<%= typeof password != 'undefined' ? password : '' %>"
+                            required
+                        />
+                    </div>
+                    <div class="mb-4">
+                        <label for="password2" class="form-label">Confirm Password</label>
+                        <input
+                            type="password"
+                            id="password2"
+                            name="password2"
+                            class="form-control"
+                            placeholder="Confirm your password"
+                            value="<%= typeof password2 != 'undefined' ? password2 : '' %>"
+                            required
+                        />
+                    </div>
+                    <div class="form-group mb-4">
+                        <label for="role" class="form-label visually-hidden">Role</label>
+                        <select id="role" name="role" class="form-select">
+                            <option value="warehouse_staff" <%= typeof role != 'undefined' && role === 'warehouse_staff' ? 'selected' : '' %>>Warehouse Staff</option>
+                            <option value="inventory_manager" <%= typeof role != 'undefined' && role === 'inventory_manager' ? 'selected' : '' %>>Inventory Manager</option>
+                            <option value="admin" <%= typeof role != 'undefined' && role === 'admin' ? 'selected' : '' %>>Admin</option>
+                        </select>
+                    </div>
+                    <div class="d-grid gap-2 mb-3">
+                        <button type="submit" class="btn btn-primary rounded-pill">Register</button>
+                    </div>
+                </form>
+                <div class="text-center my-3">
+                    <p class="text-muted">OR</p>
                 </div>
-                <div class="form-group mb-3">
-                    <label for="email">Email</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        class="form-control"
-                        placeholder="Enter Email"
-                        value="<%= typeof email != 'undefined' ? email : '' %>"
-                    />
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-secondary rounded-pill">
+                        <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google icon" class="me-2">
+                        Continue with Google
+                    </button>
                 </div>
-                <div class="form-group mb-3">
-                    <label for="password">Password</label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        class="form-control"
-                        placeholder="Create Password"
-                        value="<%= typeof password != 'undefined' ? password : '' %>"
-                    />
-                </div>
-                <div class="form-group mb-3">
-                    <label for="password2">Confirm Password</label>
-                    <input
-                        type="password"
-                        id="password2"
-                        name="password2"
-                        class="form-control"
-                        placeholder="Confirm Password"
-                        value="<%= typeof password2 != 'undefined' ? password2 : '' %>"
-                    />
-                </div>
-                <div class="form-group mb-3">
-                    <label for="role">Role</label>
-                    <select id="role" name="role" class="form-control">
-                        <option value="warehouse_staff" <%= typeof role != 'undefined' && role === 'warehouse_staff' ? 'selected' : '' %>>Warehouse Staff</option>
-                        <option value="inventory_manager" <%= typeof role != 'undefined' && role === 'inventory_manager' ? 'selected' : '' %>>Inventory Manager</option>
-                        <option value="admin" <%= typeof role != 'undefined' && role === 'admin' ? 'selected' : '' %>>Admin</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">Register</button>
-            </form>
-            <p class="mt-4">Have An Account? <a href="/auth/login">Login</a></p>
-        </div>
+            </div>
     </div>
 </div>

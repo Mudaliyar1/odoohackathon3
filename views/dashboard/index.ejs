@@ -1,66 +1,182 @@
 <%- include('../partials/flash') %>
 
-<div class="container mt-4">
-    <h1 class="mb-4">Dashboard</h1>
+<div class="container-fluid mt-4">
+    <h1 class="dashboard-title">Dashboard Overview</h1>
 
     <div class="row">
-        <div class="col-md-3 mb-4">
-            <div class="card text-white bg-primary shadow-sm">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card shadow-sm h-100 py-2">
                 <div class="card-body">
-                    <h5 class="card-title">Total Products</h5>
-                    <p class="card-text display-4"><%= totalProducts %></p>
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="card-title-text text-primary mb-1">Total Products</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><%= totalProducts %></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-box fa-2x text-secondary"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 mb-4">
-            <div class="card text-white bg-success shadow-sm">
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card shadow-sm h-100 py-2">
                 <div class="card-body">
-                    <h5 class="card-title">Total Warehouses</h5>
-                    <p class="card-text display-4"><%= totalWarehouses %></p>
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="card-title-text text-accent mb-1">Total Warehouses</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><%= totalWarehouses %></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-warehouse fa-2x text-secondary"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 mb-4">
-            <div class="card text-white bg-info shadow-sm">
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card shadow-sm h-100 py-2">
                 <div class="card-body">
-                    <h5 class="card-title">Total Inventory Items</h5>
-                    <p class="card-text display-4"><%= totalInventoryItems %></p>
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="card-title-text text-info mb-1">Total Inventory Items</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><%= totalInventoryItems %></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-boxes fa-2x text-secondary"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 mb-4">
-            <div class="card text-white bg-warning shadow-sm">
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card shadow-sm h-100 py-2">
                 <div class="card-body">
-                    <h5 class="card-title">Pending Receipts</h5>
-                    <p class="card-text display-4"><%= pendingReceipts %></p>
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="card-title-text text-warning mb-1">Pending Receipts</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><%= pendingReceipts %></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-receipt fa-2x text-secondary"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 mb-4">
-            <div class="card text-white bg-danger shadow-sm">
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card shadow-sm h-100 py-2">
                 <div class="card-body">
-                    <h5 class="card-title">Pending Deliveries</h5>
-                    <p class="card-text display-4"><%= pendingDeliveries %></p>
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="card-title-text text-danger mb-1">Pending Deliveries</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><%= pendingDeliveries %></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-truck fa-2x text-secondary"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 mb-4">
-            <div class="card text-white bg-secondary shadow-sm">
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card shadow-sm h-100 py-2">
                 <div class="card-body">
-                    <h5 class="card-title">Pending Transfers</h5>
-                    <p class="card-text display-4"><%= pendingTransfers %></p>
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="card-title-text text-secondary mb-1">Pending Transfers</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><%= pendingTransfers %></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exchange-alt fa-2x text-secondary"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 mb-4">
-            <div class="card text-white bg-dark shadow-sm">
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card shadow-sm h-100 py-2">
                 <div class="card-body">
-                    <h5 class="card-title">Pending Adjustments</h5>
-                    <p class="card-text display-4"><%= pendingAdjustments %></p>
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="card-title-text text-dark mb-1">Pending Adjustments</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><%= pendingAdjustments %></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-sliders-h fa-2x text-secondary"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Add more dashboard content here, e.g., charts, recent activities -->
+    <div class="row mt-4">
+        <div class="col-lg-12">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Alerts</h6>
+                </div>
+                <div class="card-body">
+                    <% if (alerts.length > 0) { %>
+                        <% alerts.forEach(alert => { %>
+                            <div class="alert alert-<%= alert.type %>" role="alert">
+                                <%= alert.message %>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <p>No new alerts.</p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Weekly Operations Overview</h6>
+        </div>
+        <div class="card-body">
+            <canvas id="weeklyOperationsChart"></canvas>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('weeklyOperationsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: <%- JSON.stringify(labels) %>,
+                datasets: [{
+                    label: 'Receipts',
+                    data: <%- JSON.stringify(weeklyReceipts) %>,
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Deliveries',
+                    data: <%- JSON.stringify(weeklyDeliveries) %>,
+                    backgroundColor: 'rgba(153, 102, 255, 0.6)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
 </div>
+

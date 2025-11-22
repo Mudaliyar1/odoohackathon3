@@ -1,5 +1,5 @@
 <div class="container mt-4">
-    <h1 class="mb-4">Create New Internal Transfer</h1>
+    <h1 class="mb-4 text-primary fw-bold">Create New Internal Transfer</h1>
     <form action="/internalTransfers/create" method="POST">
 
         <div class="mb-3">
@@ -26,8 +26,8 @@
         </div>
         <div id="product-lines">
             <h4 class="mt-4">Product Lines</h4>
-            <button type="button" class="btn btn-secondary mb-3" id="add-product-line">Add Product</button>
-            <div class="product-line card card-body mb-3">
+            <button type="button" class="btn btn-secondary mb-3 rounded-pill" id="add-product-line">Add Product</button>
+            <div class="product-line card card-body mb-3 shadow-sm rounded-3">
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="product-0" class="form-label">Product</label>
@@ -46,8 +46,8 @@
                 </div>
             </div>
         </div>
-        <button type="submit" class="btn btn-primary">Create Internal Transfer</button>
-        <a href="/internalTransfers" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary rounded-pill">Create Internal Transfer</button>
+        <a href="/internalTransfers" class="btn btn-secondary rounded-pill">Cancel</a>
     </form>
 </div>
 

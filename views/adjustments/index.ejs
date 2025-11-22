@@ -1,47 +1,54 @@
 <%- include('../partials/flash') %>
 
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Stock Adjustments</h1>
+    <h1 class="dashboard-title">Stock Adjustments</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
-        <a href="/adjustments/create" class="btn btn-sm btn-outline-secondary">
+        <a href="/adjustments/create" class="btn btn-sm btn-primary">
             <span data-feather="plus"></span>
             New Stock Adjustment
         </a>
     </div>
 </div>
 
-<div class="table-responsive">
-    <table class="table table-striped table-sm">
-        <thead>
-            <tr>
-                <th>Document No.</th>
-                <th>Warehouse</th>
-                <th>Type</th>
-                <th>Status</th>
-                <th>Created By</th>
-                <th>Created At</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% adjustments.forEach(adjustment => { %>
-                <tr>
-                    <td><%= adjustment.documentNumber %></td>
-                    <td><%= adjustment.warehouse.name %></td>
-                    <td><%= adjustment.type %></td>
-                    <td><%= adjustment.status %></td>
-                    <td><%= adjustment.createdBy.username %></td>
-                    <td><%= adjustment.createdAt.toLocaleDateString() %></td>
-                    <td>
-                        <a href="/adjustments/<%= adjustment._id %>" class="btn btn-info btn-sm">View</a>
-                        <% if (adjustment.status === 'pending') { %>
-                            <form action="/adjustments/<%= adjustment._id %>/validate" method="POST" style="display: inline;">
-                                <button type="submit" class="btn btn-success btn-sm">Validate</button>
-                            </form>
-                        <% } %>
-                    </td>
-                </tr>
-            <% }); %>
-        </tbody>
-    </table>
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title-text">Stock Adjustment List</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Document No.</th>
+                        <th>Warehouse</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Created By</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% adjustments.forEach(adjustment => { %>
+                        <tr>
+                            <td><%= adjustment.documentNumber %></td>
+                            <td><%= adjustment.warehouse.name %></td>
+                            <td><%= adjustment.type %></td>
+                            <td><%= adjustment.status %></td>
+                            <td><%= adjustment.createdBy.username %></td>
+                            <td><%= adjustment.createdAt.toLocaleDateString() %></td>
+                            <td>
+                                <a href="/adjustments/<%= adjustment._id %>" class="btn btn-info btn-sm">View</a>
+                                <% if (adjustment.status === 'pending') { %>
+                                    <form action="/adjustments/<%= adjustment._id %>/validate" method="POST" style="display: inline;">
+                                        <button type="submit" class="btn btn-success btn-sm">Validate</button>
+                                    </form>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>

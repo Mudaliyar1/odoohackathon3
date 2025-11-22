@@ -1,9 +1,9 @@
-const brevo = require('../config/brevo');
+const { apiInstance, SibApiV3Sdk } = require('../config/brevo');
 
 const SENDER_EMAIL = process.env.SENDER_EMAIL;
 
 const sendOtpEmail = async (toEmail, otp) => {
-    const sendSmtpEmail = new brevo.SendSmtpEmail();
+    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
     sendSmtpEmail.sender = { email: SENDER_EMAIL, name: "StockMaster" };
     sendSmtpEmail.to = [{ email: toEmail }];
@@ -17,7 +17,7 @@ const sendOtpEmail = async (toEmail, otp) => {
     `;
 
     try {
-        await brevo.sendTransacEmail(sendSmtpEmail);
+        await apiInstance.sendTransacEmail(sendSmtpEmail);
         console.log('OTP email sent successfully');
     } catch (error) {
         console.error('Error sending OTP email:', error);

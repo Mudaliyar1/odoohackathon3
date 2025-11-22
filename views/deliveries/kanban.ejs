@@ -1,0 +1,91 @@
+<%- layout('./layouts/main') %>
+
+<div class="container-fluid mt-4">
+    <h2 class="mb-4">Delivery Kanban Board</h2>
+
+    <div class="row flex-nowrap overflow-auto">
+        <!-- Pending Deliveries Column -->
+        <div class="col-md-4">
+            <div class="card border-warning mb-3">
+                <div class="card-header bg-warning text-white">Pending (<%= pendingDeliveries.length %>)</div>
+                <div class="card-body kanban-column" id="pending-deliveries" data-status="pending">
+                    <% if (pendingDeliveries.length > 0) { %>
+                        <% pendingDeliveries.forEach(delivery => { %>
+                            <div class="card mb-2 draggable-item" data-id="<%= delivery._id %>" data-status="pending">
+                                <div class="card-body">
+                                    <h5 class="card-title"><a href="/deliveries/<%= delivery._id %>">#<%= delivery.documentNumber %></a></h5>
+                                    <h6 class="card-subtitle mb-2 text-muted"><%= delivery.customerName %></h6>
+                                    <p class="card-text">Warehouse: <%= delivery.warehouse.name %></p>
+                                    <p class="card-text">Created By: <%= delivery.createdBy.name %></p>
+                                    <p class="card-text"><small class="text-muted">Created: <%= moment(delivery.createdAt).format('YYYY-MM-DD HH:mm') %></small></p>
+                                </div>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <p class="text-muted">No pending deliveries.</p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delivered Deliveries Column -->
+        <div class="col-md-4">
+            <div class="card border-success mb-3">
+                <div class="card-header bg-success text-white">Delivered (<%= deliveredDeliveries.length %>)</div>
+                <div class="card-body kanban-column" id="delivered-deliveries" data-status="delivered">
+                    <% if (deliveredDeliveries.length > 0) { %>
+                        <% deliveredDeliveries.forEach(delivery => { %>
+                            <div class="card mb-2 draggable-item" data-id="<%= delivery._id %>" data-status="delivered">
+                                <div class="card-body">
+                                    <h5 class="card-title"><a href="/deliveries/<%= delivery._id %>">#<%= delivery.documentNumber %></a></h5>
+                                    <h6 class="card-subtitle mb-2 text-muted"><%= delivery.customerName %></h6>
+                                    <p class="card-text">Warehouse: <%= delivery.warehouse.name %></p>
+                                    <p class="card-text">Created By: <%= delivery.createdBy.name %></p>
+                                    <p class="card-text"><small class="text-muted">Delivered: <%= moment(delivery.validationDate).format('YYYY-MM-DD HH:mm') %></small></p>
+                                </div>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <p class="text-muted">No delivered deliveries.</p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cancelled Deliveries Column -->
+        <div class="col-md-4">
+            <div class="card border-danger mb-3">
+                <div class="card-header bg-danger text-white">Cancelled (<%= cancelledDeliveries.length %>)</div>
+                <div class="card-body kanban-column" id="cancelled-deliveries" data-status="cancelled">
+                    <% if (cancelledDeliveries.length > 0) { %>
+                        <% cancelledDeliveries.forEach(delivery => { %>
+                            <div class="card mb-2 draggable-item" data-id="<%= delivery._id %>" data-status="cancelled">
+                                <div class="card-body">
+                                    <h5 class="card-title"><a href="/deliveries/<%= delivery._id %>">#<%= delivery.documentNumber %></a></h5>
+                                    <h6 class="card-subtitle mb-2 text-muted"><%= delivery.customerName %></h6>
+                                    <p class="card-text">Warehouse: <%= delivery.warehouse.name %></p>
+                                    <p class="card-text">Created By: <%= delivery.createdBy.name %></p>
+                                    <p class="card-text"><small class="text-muted">Cancelled: <%= moment(delivery.createdAt).format('YYYY-MM-DD HH:mm') %></small></p>
+                                </div>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <p class="text-muted">No cancelled deliveries.</p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .kanban-column {
+        min-height: 200px;
+        background-color: #f8f9fa;
+        border-radius: 0.25rem;
+        padding: 1rem;
+    }
+    .draggable-item {
+        cursor: grab;
+    }
+</style>

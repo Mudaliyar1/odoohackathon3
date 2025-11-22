@@ -1,9 +1,9 @@
 <%- include('../partials/flash') %>
 
 <div class="container mt-4">
-    <h1 class="mb-4">Create New Product</h1>
+    <h1 class="mb-4 text-primary fw-bold">Create New Product</h1>
 
-    <div class="card">
+    <div class="card shadow-sm rounded-3">
         <div class="card-body">
             <form action="/products/create" method="POST">
                 <div class="mb-3">
@@ -45,8 +45,8 @@
                     <label for="quantity" class="form-label">Initial Quantity</label>
                     <input type="number" class="form-control" id="quantity" name="quantity" value="<%= typeof quantity != 'undefined' ? quantity : '' %>" min="0" required>
                 </div>
-                <button type="submit" class="btn btn-primary">Add Product</button>
-                <a href="/products" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary rounded-pill">Add Product</button>
+                <a href="/products" class="btn btn-secondary rounded-pill">Cancel</a>
             </form>
         </div>
     </div>

@@ -21,6 +21,42 @@ exports.productList = async (req, res) => {
     }
 };
 
+exports.productKanban = async (req, res) => {
+    try {
+        const products = await Product.find({}).populate('warehouse');
+        const productsWithInventory = await Promise.all(products.map(async product => {
+            const inventory = await Inventory.findOne({ product: product._id, warehouse: product.warehouse });
+            return {
+                ...product.toObject(),
+                availableQuantity: inventory ? inventory.available : 0
+            };
+        }));
+
+        const productsByStatus = {
+            available: [],
+            out_of_stock: [],
+            discontinued: []
+        };
+
+        productsWithInventory.forEach(product => {
+            if (productsByStatus[product.status]) {
+                productsByStatus[product.status].push(product);
+            } else {
+                productsByStatus.available.push(product); 
+            }
+        });
+
+        res.render('products/kanban', { 
+            title: 'Product Kanban Board', 
+            productsByStatus 
+        });
+    } catch (err) {
+        console.error(err);
+        req.flash('error_msg', 'Error fetching products for Kanban');
+        res.redirect('/dashboard');
+    }
+};
+
 // Display product create form on GET.
 exports.productCreateGet = async (req, res) => {
     try {
@@ -222,5 +258,24 @@ exports.productDelete = async (req, res) => {
         console.error(err);
         req.flash('error_msg', 'Error deleting product');
         res.redirect('/products');
+    }
+};
+
+exports.updateProductStatus = async (req, res) => {
+    try {
+        const { productId, newStatus } = req.body;
+        const product = await Product.findById(productId);
+
+        if (!product) {
+            return res.status(404).json({ success: false, message: 'Product not found' });
+        }
+
+        product.status = newStatus;
+        await product.save();
+
+        res.json({ success: true, message: 'Product status updated', product });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server error', error: err.message });
     }
 };

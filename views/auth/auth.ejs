@@ -1,0 +1,142 @@
+<div class="row mt-5 justify-content-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="text-center mb-4">
+            <img src="/img/logo.png" alt="Logo" class="img-fluid mb-2" style="max-width: 70px;">
+            <h3 class="text-primary fw-bold">Inv-Sys</h3>
+        </div>
+        <div class="card shadow-lg pt-4 pb-4 bg-light rounded-3 border-0">
+            <div class="card-body">
+                <ul class="nav nav-pills nav-justified mb-4" id="ex1" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link <%= currentTab === 'login' ? 'active' : '' %> rounded-pill" id="tab-login" data-bs-toggle="pill" href="#pills-login" role="tab" aria-controls="pills-login" aria-selected="<%= currentTab === 'login' ? 'true' : 'false' %>">Login</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link <%= currentTab === 'register' ? 'active' : '' %> rounded-pill" id="tab-register" data-bs-toggle="pill" href="#pills-register" role="tab" aria-controls="pills-register" aria-selected="<%= currentTab === 'register' ? 'true' : 'false' %>">Sign Up</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane fade <%= currentTab === 'login' ? 'show active' : '' %>" id="pills-login" role="tabpanel" aria-labelledby="tab-login">
+                        <h2 class="text-center mb-4">Welcome Back!</h2>
+                        <%- include ('../partials/flash') %>
+                        <form action="/auth/login" method="POST">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    class="form-control"
+                                    placeholder="Enter your email"
+                                    value="<%= typeof email != 'undefined' ? email : '' %>"
+                                    required
+                                />
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    class="form-control"
+                                    placeholder="Enter your password"
+                                    required
+                                />
+                            </div>
+                            <div class="text-end mb-3">
+                                <a href="/auth/forgot" class="text-primary">Forgot Password?</a>
+                            </div>
+                            <div class="d-grid gap-2 mb-3">
+                                <button type="submit" class="btn btn-primary rounded-pill">Login</button>
+                            </div>
+                        </form>
+                        <div class="text-center my-3">
+                            <p class="text-muted">OR</p>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-secondary rounded-pill">
+                                <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google icon" class="me-2">
+                                Continue with Google
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade <%= currentTab === 'register' ? 'show active' : '' %>" id="pills-register" role="tabpanel" aria-labelledby="tab-register">
+                        <h2 class="text-center mb-4">Create an Account</h2>
+                        <%- include ('../partials/flash') %>
+                        <form action="/auth/register" method="POST">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Name</label>
+                                <input
+                                    type="text"
+                                    id="name"
+                                    name="name"
+                                    class="form-control"
+                                    placeholder="Your Name"
+                                    value="<%= typeof name != 'undefined' ? name : '' %>"
+                                    required
+                                />
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    class="form-control"
+                                    placeholder="Enter your email"
+                                    value="<%= typeof email != 'undefined' ? email : '' %>"
+                                    required
+                                />
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    class="form-control"
+                                    placeholder="Create a password"
+                                    value="<%= typeof password != 'undefined' ? password : '' %>"
+                                    required
+                                />
+                            </div>
+                            <div class="mb-4">
+                                <label for="password2" class="form-label">Confirm Password</label>
+                                <input
+                                    type="password"
+                                    id="password2"
+                                    name="password2"
+                                    class="form-control"
+                                    placeholder="Confirm your password"
+                                    value="<%= typeof password2 != 'undefined' ? password2 : '' %>"
+                                    required
+                                />
+                            </div>
+                            <div class="form-group mb-4">
+                                <label for="role" class="form-label visually-hidden">Role</label>
+                                <select id="role" name="role" class="form-select">
+                                    <option value="warehouse_staff" <%= typeof role != 'undefined' && role === 'warehouse_staff' ? 'selected' : '' %>>Warehouse Staff</option>
+                                    <option value="inventory_manager" <%= typeof role != 'undefined' && role === 'inventory_manager' ? 'selected' : '' %>>Inventory Manager</option>
+                                    <option value="admin" <%= typeof role != 'undefined' && role === 'admin' ? 'selected' : '' %>>Admin</option>
+                                </select>
+                            </div>
+                            <div class="d-grid gap-2 mb-3">
+                                <button type="submit" class="btn btn-primary rounded-pill">Register</button>
+                            </div>
+                        </form>
+                        <div class="text-center my-3">
+                            <p class="text-muted">OR</p>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-secondary rounded-pill">
+                                <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google icon" class="me-2">
+                                Continue with Google
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

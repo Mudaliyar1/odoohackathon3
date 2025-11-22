@@ -46,8 +46,8 @@
             display: none;
         }
     </style>
-    <h1 class="mb-4">Delivery Order Details</h1>
-    <div class="card">
+    <h1 class="mb-4 text-primary fw-bold">Delivery Order Details</h1>
+    <div class="card shadow-sm rounded-3">
         <div class="card-header">
             Delivery #<%= delivery.documentNumber %>
         </div>
@@ -89,10 +89,10 @@
             </div>
 
             <div class="mt-4">
-                <a href="/deliveries" class="btn btn-secondary">Back to Delivery Orders</a>
+                <a href="/deliveries" class="btn btn-secondary rounded-pill">Back to Delivery Orders</a>
                 <% if (delivery.status === 'pending') { %>
                     <form action="/deliveries/<%= delivery._id %>/validate" method="POST" class="d-inline ms-2">
-                        <button type="submit" class="btn btn-success">Validate Delivery</button>
+                        <button type="submit" class="btn btn-success rounded-pill">Validate Delivery</button>
                     </form>
                 <% } %>
             </div>

@@ -1,9 +1,9 @@
 <%- include('../partials/flash') %>
 
 <div class="container mt-4">
-    <h1 class="mb-4">Edit Product</h1>
+    <h1 class="mb-4 text-primary fw-bold">Edit Product</h1>
 
-    <div class="card">
+    <div class="card shadow-sm rounded-3">
         <div class="card-body">
             <form action="/products/<%= product._id %>/edit" method="POST">
                 <div class="mb-3">
@@ -44,8 +44,8 @@
                         <% }); %>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary">Update Product</button>
-                <a href="/products/<%= product._id %>" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary rounded-pill">Update Product</button>
+                <a href="/products/<%= product._id %>" class="btn btn-secondary rounded-pill">Cancel</a>
             </form>
         </div>
     </div>

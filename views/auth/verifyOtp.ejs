@@ -4,7 +4,7 @@
             <h1 class="text-center mb-3">Verify OTP</h1>
             <%- include ('../partials/flash') %>
             <form action="/auth/verify-otp" method="POST">
-                <div class="form-group mb-3">
+                <div class="form-group mb-3" id="emailInputGroup">
                     <label for="email">Email</label>
                     <input
                         type="email"
@@ -13,9 +13,10 @@
                         class="form-control"
                         placeholder="Enter Email"
                         value="<%= typeof email != 'undefined' ? email : '' %>"
+                        <%= typeof email != 'undefined' && email ? 'readonly' : '' %>
                     />
                 </div>
-                <div class="form-group mb-3">
+                <div class="form-group mb-3" id="otpVerificationBlock">
                     <label for="otp">OTP</label>
                     <input
                         type="text"
@@ -31,3 +32,67 @@
         </div>
     </div>
 </div>
+
+<div class="row mt-5" id="resetPasswordBlock" style="display: none;">
+    <div class="col-md-6 m-auto">
+        <div class="card card-body">
+            <h1 class="text-center mb-3">Reset Password</h1>
+            <%- include ('../partials/flash') %>
+            <form action="/auth/verify-otp" method="POST">
+                <div class="form-group mb-3">
+                    <label for="password">New Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        class="form-control"
+                        placeholder="Enter New Password"
+                        required
+                    />
+                </div>
+                <div class="form-group mb-3">
+                    <label for="password2">Confirm New Password</label>
+                    <input
+                        type="password"
+                        id="password2"
+                        name="password2"
+                        class="form-control"
+                        placeholder="Confirm New Password"
+                        required
+                    />
+                </div>
+                <input type="hidden" name="email" value="<%= typeof email != 'undefined' ? email : '' %>">
+                <input type="hidden" name="otp" id="resetOtp" value="">
+                <button type="submit" class="btn btn-primary btn-block">Reset Password</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const emailInputGroup = document.getElementById('emailInputGroup');
+        const otpVerificationBlock = document.getElementById('otpVerificationBlock');
+        const resetPasswordBlock = document.getElementById('resetPasswordBlock');
+
+        if (urlParams.get('email')) {
+            document.getElementById('email').value = urlParams.get('email');
+            emailInputGroup.style.display = 'none'; // Hide email field if pre-filled
+        }
+
+        if (urlParams.get('otpVerified') === 'true') {
+            otpVerificationBlock.style.display = 'none';
+            resetPasswordBlock.style.display = 'block';
+            // Ensure email is passed to the reset password form
+            const resetEmailInput = resetPasswordBlock.querySelector('input[name="email"]');
+            if (resetEmailInput) {
+                resetEmailInput.value = urlParams.get('email');
+            }
+            const resetOtpInput = document.getElementById('resetOtp');
+            if (resetOtpInput) {
+                resetOtpInput.value = urlParams.get('otp');
+            }
+        }
+    });
+</script>

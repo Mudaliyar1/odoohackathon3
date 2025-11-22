@@ -1,7 +1,7 @@
 <%- include('../partials/flash') %>
 
 <div class="container mt-5">
-    <h1>Create Delivery</h1>
+    <h1 class="text-primary fw-bold">Create Delivery</h1>
     
     <form action="/deliveries/create" method="POST">
         <div class="mb-3">
@@ -27,7 +27,7 @@
         <div class="mb-3">
             <h4>Products</h4>
             <div id="products-container">
-                <div class="product-line mb-3 border p-3">
+                <div class="product-line mb-3 border p-3 shadow-sm rounded-3">
                     <div class="row">
                         <div class="col-md-4">
                             <label class="form-label">Product</label>
@@ -50,16 +50,16 @@
                             <input type="number" class="form-control unit-price-input" name="products[0][unitPrice]" step="0.01" required readonly>
                         </div>
                         <div class="col-md-2 d-flex align-items-end">
-                            <button type="button" class="btn btn-danger remove-product">Remove</button>
+                            <button type="button" class="btn btn-danger rounded-pill remove-product">Remove</button>
                         </div>
                     </div>
                 </div>
             </div>
-            <button type="button" id="add-product" class="btn btn-secondary">Add Product</button>
+            <button type="button" id="add-product" class="btn btn-secondary rounded-pill">Add Product</button>
         </div>
         
-        <button type="submit" class="btn btn-primary">Create Delivery</button>
-        <a href="/deliveries" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary rounded-pill">Create Delivery</button>
+        <a href="/deliveries" class="btn btn-secondary rounded-pill">Cancel</a>
     </form>
 </div>
 
@@ -177,7 +177,7 @@
                     <input type="number" class="form-control unit-price-input" name="products[${productIndex}][unitPrice]" step="0.01" required readonly>
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
-                    <button type="button" class="btn btn-danger remove-product">Remove</button>
+                    <button type="button" class="btn btn-danger rounded-pill remove-product">Remove</button>
                 </div>
             </div>
         `;

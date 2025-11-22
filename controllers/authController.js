@@ -5,7 +5,7 @@ const { sendOtpEmail } = require('../services/emailService');
 
 // Show Login Page
 exports.showLoginPage = (req, res) => {
-    res.render('auth/login', { title: 'Login' });
+    res.render('auth/login', { title: 'Login', currentTab: 'login', layout: './layouts/auth' });
 };
 
 // Handle Login
@@ -16,13 +16,13 @@ exports.login = async (req, res, next) => {
         const user = await User.findOne({ email });
         if (!user) {
             req.flash('error_msg', 'That email is not registered');
-            return res.redirect('/auth/login');
+            return res.redirect('/auth');
         }
 
         const isMatch = await user.matchPassword(password);
         if (!isMatch) {
             req.flash('error_msg', 'Password incorrect');
-            return res.redirect('/auth/login');
+            return res.redirect('/auth');
         }
 
         req.session.userId = user._id;
@@ -33,13 +33,13 @@ exports.login = async (req, res, next) => {
     } catch (err) {
         console.error(err);
         req.flash('error_msg', 'Something went wrong');
-        res.redirect('/auth/login');
+        res.redirect('/auth');
     }
 };
 
 // Show Register Page
 exports.showRegisterPage = (req, res) => {
-    res.render('auth/register', { title: 'Register' });
+    res.render('auth/register', { title: 'Register', currentTab: 'register', layout: './layouts/auth' });
 };
 
 // Handle Register
@@ -63,28 +63,30 @@ exports.register = async (req, res, next) => {
     }
 
     if (errors.length > 0) {
-        res.render('auth/register', {
+        res.render('auth/auth', {
             errors,
             name,
             email,
             password,
             password2,
             role,
-            title: 'Register'
+            title: 'Register',
+            currentTab: 'register'
         });
     } else {
         try {
             let user = await User.findOne({ email });
             if (user) {
                 errors.push({ msg: 'Email already exists' });
-                return res.render('auth/register', {
+                return res.render('auth/auth', {
                     errors,
                     name,
                     email,
                     password,
                     password2,
                     role,
-                    title: 'Register'
+                    title: 'Register',
+                    currentTab: 'register'
                 });
             }
 
@@ -97,25 +99,25 @@ exports.register = async (req, res, next) => {
 
             await user.save();
             req.flash('success_msg', 'You are now registered and can log in');
-            res.redirect('/auth/login');
+            res.redirect('/auth');
 
         } catch (err) {
             console.error(err);
             req.flash('error_msg', 'Something went wrong');
-            res.redirect('/auth/register');
+            res.redirect('/auth');
         }
     }
 };
 
 // Handle Logout
 exports.logout = (req, res) => {
+    req.flash('success_msg', 'You are logged out');
     req.session.destroy(err => {
         if (err) {
             console.error(err);
             return res.redirect('/dashboard');
         }
         res.clearCookie('connect.sid'); // Clear session cookie
-        req.flash('success_msg', 'You are logged out');
         res.redirect('/auth/login');
     });
 };
@@ -149,7 +151,7 @@ exports.forgotPassword = async (req, res) => {
         await sendOtpEmail(email, otp);
 
         req.flash('success_msg', 'OTP sent to your email address');
-        res.redirect('/auth/verify-otp');
+        res.redirect('/auth/verify-otp?email=' + email);
 
     } catch (err) {
         console.error(err);
@@ -160,20 +162,23 @@ exports.forgotPassword = async (req, res) => {
 
 // Show Verify OTP Page
 exports.showVerifyOtpPage = (req, res) => {
-    res.render('auth/verifyOtp', { title: 'Verify OTP' });
+    const email = req.query.email || '';
+    res.render('auth/verifyOtp', { title: 'Verify OTP', email });
 };
 
 // Handle Verify OTP
 exports.verifyOtp = async (req, res) => {
-    const { email, otp } = req.body;
+    const { email, otp, password, password2 } = req.body;
 
     try {
+        console.log('Verify OTP attempt for email:', email, 'OTP:', otp);
         const user = await User.findOne({ email });
         if (!user) {
             req.flash('error_msg', 'Invalid email or OTP');
             return res.redirect('/auth/verify-otp');
         }
 
+        console.log('User found:', user._id);
         const resetToken = await PasswordResetToken.findOne({
             user: user._id,
             otp,
@@ -181,72 +186,48 @@ exports.verifyOtp = async (req, res) => {
             expiresAt: { $gt: Date.now() }
         });
 
+        console.log('Reset Token found:', resetToken);
+
         if (!resetToken) {
             req.flash('error_msg', 'Invalid or expired OTP');
             return res.redirect('/auth/verify-otp');
         }
 
-        // Mark OTP as used
-        resetToken.used = true;
-        await resetToken.save();
+        // If password fields are present, proceed with password reset
+        if (password && password2) {
+            if (password !== password2) {
+                req.flash('error_msg', 'Passwords do not match');
+                return res.redirect('/auth/verify-otp?otpVerified=true&email=' + email);
+            }
 
-        req.session.resetUserId = user._id; // Store user ID in session for password reset
-        req.flash('success_msg', 'OTP verified successfully. You can now reset your password.');
-        res.redirect('/auth/reset-password');
+            if (password.length < 6) {
+                req.flash('error_msg', 'Password must be at least 6 characters');
+                return res.redirect('/auth/verify-otp?otpVerified=true&email=' + email);
+            }
+
+            user.password = password; // Mongoose pre-save hook will hash it
+            await user.save();
+
+            resetToken.used = true;
+            await resetToken.save();
+
+            // Log the user in directly after password reset
+            req.session.userId = user._id;
+            req.session.role = user.role;
+
+            req.flash('success_msg', 'Password successfully reset. You are now logged in.');
+            return res.redirect('/dashboard');
+        } else {
+            // If only OTP is submitted, show the password reset fields
+            req.flash('success_msg', 'OTP verified successfully. Please set your new password.');
+            return res.redirect('/auth/verify-otp?otpVerified=true&email=' + email + '&otp=' + otp);
+        }
 
     } catch (err) {
         console.error(err);
-        req.flash('error_msg', 'Error verifying OTP');
+        req.flash('error_msg', 'Error verifying OTP or resetting password');
         res.redirect('/auth/verify-otp');
     }
 };
 
 // Show Reset Password Page
-exports.showResetPasswordPage = (req, res) => {
-    if (!req.session.resetUserId) {
-        req.flash('error_msg', 'Please verify OTP first');
-        return res.redirect('/auth/forgot');
-    }
-    res.render('auth/resetPassword', { title: 'Reset Password' });
-};
-
-// Handle Reset Password
-exports.resetPassword = async (req, res) => {
-    const { password, password2 } = req.body;
-    const userId = req.session.resetUserId;
-
-    if (!userId) {
-        req.flash('error_msg', 'Unauthorized. Please verify OTP again.');
-        return res.redirect('/auth/forgot');
-    }
-
-    if (password !== password2) {
-        req.flash('error_msg', 'Passwords do not match');
-        return res.redirect('/auth/reset-password');
-    }
-
-    if (password.length < 6) {
-        req.flash('error_msg', 'Password must be at least 6 characters');
-        return res.redirect('/auth/reset-password');
-    }
-
-    try {
-        const user = await User.findById(userId);
-        if (!user) {
-            req.flash('error_msg', 'User not found');
-            return res.redirect('/auth/login');
-        }
-
-        user.password = password; // Mongoose pre-save hook will hash it
-        await user.save();
-
-        delete req.session.resetUserId; // Clear resetUserId from session
-        req.flash('success_msg', 'Password successfully reset. You can now log in with your new password.');
-        res.redirect('/auth/login');
-
-    } catch (err) {
-        console.error(err);
-        req.flash('error_msg', 'Error resetting password');
-        res.redirect('/auth/reset-password');
-    }
-};

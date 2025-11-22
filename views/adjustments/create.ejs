@@ -1,7 +1,7 @@
 <%- include('../partials/flash') %>
 
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Create Stock Adjustment</h1>
+    <h1 class="h2 text-primary fw-bold">Create Stock Adjustment</h1>
 </div>
 
 <div class="col-lg-6 col-md-8 mx-auto">
@@ -30,7 +30,7 @@
 
         <div id="product-lines">
             <label class="form-label">Product Lines</label>
-            <div class="product-line mb-3 p-3 border rounded">
+            <div class="product-line mb-3 p-3 border rounded shadow-sm">
                 <div class="mb-3">
                     <label for="product-0" class="form-label">Product</label>
                     <select class="form-control product-select" id="product-0" name="products[0][id]" required>
@@ -44,14 +44,14 @@
                     <label for="quantity-0" class="form-label">Quantity</label>
                     <input type="number" class="form-control" id="quantity-0" name="products[0][quantity]" min="1" required>
                 </div>
-                <button type="button" class="btn btn-danger btn-sm remove-product-line">Remove</button>
+                <button type="button" class="btn btn-danger btn-sm rounded-pill remove-product-line">Remove</button>
             </div>
         </div>
-        <button type="button" class="btn btn-secondary mb-3" id="add-product-line">Add Product Line</button>
+        <button type="button" class="btn btn-secondary rounded-pill mb-3" id="add-product-line">Add Product Line</button>
 
         <div class="d-grid gap-2">
-            <button type="submit" class="btn btn-primary">Create Adjustment</button>
-            <a href="/adjustments" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary rounded-pill">Create Adjustment</button>
+            <a href="/adjustments" class="btn btn-secondary rounded-pill">Cancel</a>
         </div>
     </form>
 </div>
@@ -61,7 +61,7 @@
     document.getElementById('add-product-line').addEventListener('click', () => {
         const productLinesDiv = document.getElementById('product-lines');
         const newProductLine = document.createElement('div');
-        newProductLine.classList.add('product-line', 'mb-3', 'p-3', 'border', 'rounded');
+        newProductLine.classList.add('product-line', 'mb-3', 'p-3', 'border', 'rounded', 'shadow-sm');
         newProductLine.innerHTML = `
             <div class="mb-3">
                 <label for="product-${productLineIndex}" class="form-label">Product</label>
@@ -76,7 +76,7 @@
                 <label for="quantity-${productLineIndex}" class="form-label">Quantity</label>
                 <input type="number" class="form-control" id="quantity-${productLineIndex}" name="products[${productLineIndex}][quantity]" min="1" required>
             </div>
-            <button type="button" class="btn btn-danger btn-sm remove-product-line">Remove</button>
+            <button type="button" class="btn btn-danger btn-sm rounded-pill remove-product-line">Remove</button>
         `;
         productLinesDiv.appendChild(newProductLine);
         productLineIndex++;

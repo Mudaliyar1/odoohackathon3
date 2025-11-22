@@ -6,8 +6,10 @@ const productController = require('../controllers/productController');
 // All products
 router.get('/', ensureAuthenticated, productController.productList);
 
-// Create product form
-router.get('/create', ensureAuthenticated, productController.productCreateGet);
+// Kanban view for products
+router.get('/kanban', ensureAuthenticated, productController.productKanban);
+
+router.post('/updateStatus', ensureAuthenticated, productController.updateProductStatus);
 
 // Create product submission
 router.post('/create', ensureAuthenticated, productController.productCreatePost);
