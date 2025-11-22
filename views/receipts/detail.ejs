@@ -1,0 +1,103 @@
+<div class="container mt-4">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20mm;
+        }
+        h1, h4 {
+            color: #333;
+        }
+        .card {
+            border: 1px solid #eee;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+            font-weight: bold;
+        }
+        .card-body {
+            padding: 15px;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .table th, .table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .table th {
+            background-color: #f2f2f2;
+        }
+        .badge {
+            padding: 5px 10px;
+            border-radius: 3px;
+            color: white;
+        }
+        .bg-warning { background-color: #ffc107; }
+        .bg-success { background-color: #28a745; }
+        /* Hide buttons in PDF */
+        .mt-4 a.btn, .mt-4 form button.btn {
+            display: none;
+        }
+    </style>
+    <h1 class="mb-4">Receipt Details</h1>
+    <div class="card">
+        <div class="card-header">
+            Receipt #<%= receipt.documentNumber %>
+        </div>
+        <div class="card-body">
+            <p><strong>Supplier:</strong> <%= receipt.supplierName %></p>
+            <p><strong>Warehouse:</strong> <%= receipt.warehouse ? receipt.warehouse.name : 'N/A' %></p>
+            <p><strong>Status:</strong> 
+                <span class="badge <%= receipt.status === 'pending' ? 'bg-warning' : 'bg-success' %>">
+                    <%= receipt.status %>
+                </span>
+            </p>
+            <p><strong>Created By:</strong> <%= receipt.createdBy ? receipt.createdBy.name : 'N/A' %></p>
+            <p><strong>Created At:</strong> <%= moment(receipt.createdAt).format('YYYY-MM-DD HH:mm') %></p>
+            <% if (receipt.status === 'received') { %>
+                <p><strong>Validated By:</strong> <%= receipt.validatedBy ? receipt.validatedBy.name : 'N/A' %></p>
+                <p><strong>Validation Date:</strong> <%= moment(receipt.validationDate).format('YYYY-MM-DD HH:mm') %></p>
+            <% } %>
+
+            <h4 class="mt-4">Product Lines</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>SKU</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% receipt.lines.forEach(line => { %>
+                            <tr>
+                                <td><%= line.product ? line.product.name : 'N/A' %></td>
+                                <td><%= line.product ? line.product.sku : 'N/A' %></td>
+                                <td><%= line.quantity %></td>
+                                <td><%= line.unitPrice %></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4">
+                <a href="/receipts" class="btn btn-secondary">Back to Receipts</a>
+                <% if (receipt.status === 'pending') { %>
+                    <form action="/receipts/<%= receipt._id %>/validate" method="POST" class="d-inline ms-2">
+                        <button type="submit" class="btn btn-success">Validate Receipt</button>
+                    </form>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>

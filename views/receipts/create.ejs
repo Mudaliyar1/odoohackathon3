@@ -1,0 +1,282 @@
+<div class="container mt-4">
+    <h1 class="mb-4">Create New Receipt</h1>
+    <form action="/receipts/create" method="POST">
+        <div class="mb-3">
+            <label for="documentNumber" class="form-label">Document Number</label>
+            <input type="text" class="form-control" id="documentNumber" name="documentNumber" value="<%= documentNumber %>" readonly>
+            <small class="form-text text-muted">Auto-generated document number</small>
+        </div>
+        <div class="mb-3">
+            <label for="supplierName" class="form-label">Supplier Name</label>
+            <input type="text" class="form-control" id="supplierName" name="supplierName" required>
+        </div>
+        <div class="mb-3">
+            <label for="warehouse" class="form-label">Warehouse</label>
+            <select class="form-control" id="warehouse" name="warehouse" required>
+                <option value="">Select Warehouse</option>
+                <% warehouses.forEach(warehouse => { %>
+                    <option value="<%= warehouse._id %>"><%= warehouse.name %></option>
+                <% }) %>
+            </select>
+        </div>
+        <div id="product-lines">
+            <h4 class="mt-4">Product Lines</h4>
+            <button type="button" class="btn btn-secondary mb-3" id="add-product-line">Add Product</button>
+            <div class="product-line card card-body mb-3">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Product Selection</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="productType-0" id="existing-0" value="existing" checked>
+                            <label class="form-check-label" for="existing-0">Select Existing Product</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="productType-0" id="new-0" value="new">
+                            <label class="form-check-label" for="new-0">Create New Product</label>
+                        </div>
+                        
+                        <!-- Existing Product Selection -->
+                        <div class="existing-product-section mt-2">
+                            <select class="form-control product-select" id="product-0" name="products[0][id]" required>
+                                <option value="">Select Product</option>
+                                <% products.forEach(product => { %>
+                                    <option value="<%= product._id %>" data-sku="<%= product.sku %>" data-price="<%= product.price %>" data-category="<%= product.category %>">
+                                        <%= product.name %> (<%= product.sku %>)
+                                    </option>
+                                <% }) %>
+                            </select>
+                            <div class="product-info mt-2" style="display: none;">
+                                <small class="text-muted">
+                                    <strong>SKU:</strong> <span class="product-sku"></span><br>
+                                    <strong>Category:</strong> <span class="product-category"></span><br>
+                                    <strong>Current Price:</strong> $<span class="product-price"></span>
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <!-- New Product Creation -->
+                        <div class="new-product-section mt-2" style="display: none;">
+                            <input type="text" class="form-control mb-2" name="products[0][newName]" placeholder="Product Name">
+                            <input type="text" class="form-control mb-2" name="products[0][newSku]" placeholder="SKU (Auto-generated if empty)">
+                            <select class="form-control mb-2" name="products[0][newCategory]">
+                                <option value="">Select Category</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Clothing">Clothing</option>
+                                <option value="Food">Food</option>
+                                <option value="Books">Books</option>
+                                <option value="Home & Garden">Home & Garden</option>
+                                <option value="Sports">Sports</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <input type="text" class="form-control mb-2" name="products[0][newUnitOfMeasure]" placeholder="Unit of Measure (e.g., pcs, kg, liters)">
+                            <input type="number" class="form-control" name="products[0][newReorderLevel]" placeholder="Reorder Level" min="0" value="1">
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="quantity-0" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" id="quantity-0" name="products[0][quantity]" min="1" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="unitPrice-0" class="form-label">Unit Price</label>
+                        <input type="number" class="form-control" id="unitPrice-0" name="products[0][unitPrice]" min="0" step="0.01" required>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Create Receipt</button>
+        <a href="/receipts" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        let productLineIndex = 1;
+        
+        // Function to handle product type selection
+        function handleProductTypeSelection(radio, index) {
+            const existingSection = document.querySelector(`#product-lines .product-line:nth-child(3) .existing-product-section`);
+            const newSection = document.querySelector(`#product-lines .product-line:nth-child(3) .new-product-section`);
+            const productSelect = document.querySelector(`#product-${index}`);
+            const productInfo = document.querySelector('.product-info');
+            
+            if (radio.value === 'existing') {
+                existingSection.style.display = 'block';
+                newSection.style.display = 'none';
+                productSelect.setAttribute('required', 'required');
+                // Clear new product fields
+                newSection.querySelectorAll('input, select').forEach(input => {
+                    input.removeAttribute('required');
+                    if (input.type !== 'radio') input.value = '';
+                });
+            } else {
+                existingSection.style.display = 'none';
+                newSection.style.display = 'block';
+                productSelect.removeAttribute('required');
+                productInfo.style.display = 'none';
+                // Add required to new product fields
+                newSection.querySelectorAll('input[type="text"], select').forEach(input => {
+                    input.setAttribute('required', 'required');
+                });
+            }
+        }
+        
+        // Add event listeners to radio buttons
+        document.querySelectorAll('input[type="radio"][name="productType-0"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                handleProductTypeSelection(e.target, 0);
+            });
+        });
+        
+        // Handle product selection for existing products
+        document.getElementById('product-0').addEventListener('change', (e) => {
+            const selectedOption = e.target.selectedOptions[0];
+            const productInfo = document.querySelector('.product-info');
+            const unitPriceInput = document.getElementById('unitPrice-0');
+            
+            if (selectedOption.value) {
+                document.querySelector('.product-sku').textContent = selectedOption.dataset.sku;
+                document.querySelector('.product-category').textContent = selectedOption.dataset.category;
+                document.querySelector('.product-price').textContent = selectedOption.dataset.price;
+                productInfo.style.display = 'block';
+                unitPriceInput.value = selectedOption.dataset.price;
+            } else {
+                productInfo.style.display = 'none';
+                unitPriceInput.value = '';
+            }
+        });
+        
+        // Add new product line
+        document.getElementById('add-product-line').addEventListener('click', () => {
+            const productLinesDiv = document.getElementById('product-lines');
+            const newProductLine = document.createElement('div');
+            newProductLine.classList.add('product-line', 'card', 'card-body', 'mb-3');
+            newProductLine.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Product Selection</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="productType-${productLineIndex}" id="existing-${productLineIndex}" value="existing" checked>
+                            <label class="form-check-label" for="existing-${productLineIndex}">Select Existing Product</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="productType-${productLineIndex}" id="new-${productLineIndex}" value="new">
+                            <label class="form-check-label" for="new-${productLineIndex}">Create New Product</label>
+                        </div>
+                        
+                        <!-- Existing Product Selection -->
+                        <div class="existing-product-section mt-2">
+                            <select class="form-control product-select" id="product-${productLineIndex}" name="products[${productLineIndex}][id]" required>
+                                <option value="">Select Product</option>
+                                <% products.forEach(product => { %>
+                                    <option value="<%= product._id %>" data-sku="<%= product.sku %>" data-price="<%= product.price %>" data-category="<%= product.category %>">
+                                        <%= product.name %> (<%= product.sku %>)
+                                    </option>
+                                <% }) %>
+                            </select>
+                            <div class="product-info mt-2" style="display: none;">
+                                <small class="text-muted">
+                                    <strong>SKU:</strong> <span class="product-sku"></span><br>
+                                    <strong>Category:</strong> <span class="product-category"></span><br>
+                                    <strong>Current Price:</strong> $<span class="product-price"></span>
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <!-- New Product Creation -->
+                        <div class="new-product-section mt-2" style="display: none;">
+                            <input type="text" class="form-control mb-2" name="products[${productLineIndex}][newName]" placeholder="Product Name">
+                            <input type="text" class="form-control mb-2" name="products[${productLineIndex}][newSku]" placeholder="SKU (Auto-generated if empty)">
+                            <select class="form-control mb-2" name="products[${productLineIndex}][newCategory]">
+                                <option value="">Select Category</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Clothing">Clothing</option>
+                                <option value="Food">Food</option>
+                                <option value="Books">Books</option>
+                                <option value="Home & Garden">Home & Garden</option>
+                            <option value="Sports">Sports</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <input type="text" class="form-control mb-2" name="products[${productLineIndex}][newUnitOfMeasure]" placeholder="Unit of Measure (e.g., pcs, kg, liters)">
+                            <input type="number" class="form-control" name="products[${productLineIndex}][newReorderLevel]" placeholder="Reorder Level" min="0" value="1">
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="quantity-${productLineIndex}" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" id="quantity-${productLineIndex}" name="products[${productLineIndex}][quantity]" min="1" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="unitPrice-${productLineIndex}" class="form-label">Unit Price</label>
+                        <input type="number" class="form-control" id="unitPrice-${productLineIndex}" name="products[${productLineIndex}][unitPrice]" min="0" step="0.01" required>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-danger btn-sm remove-product-line">Remove</button>
+            `;
+            productLinesDiv.appendChild(newProductLine);
+            
+            // Add event listeners to the new radio buttons
+            newProductLine.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    const index = e.target.name.split('-')[1];
+                    handleProductTypeSelectionForIndex(e.target, index);
+                });
+            });
+            
+            // Add event listener to the product select
+            const productSelect = newProductLine.querySelector('.product-select');
+            productSelect.addEventListener('change', (e) => {
+                const selectedOption = e.target.selectedOptions[0];
+                const productInfo = newProductLine.querySelector('.product-info');
+                const unitPriceInput = newProductLine.querySelector('input[name$="[unitPrice]"]');
+                
+                if (selectedOption.value) {
+                    productInfo.querySelector('.product-sku').textContent = selectedOption.dataset.sku;
+                    productInfo.querySelector('.product-category').textContent = selectedOption.dataset.category;
+                    productInfo.querySelector('.product-price').textContent = selectedOption.dataset.price;
+                    productInfo.style.display = 'block';
+                    unitPriceInput.value = selectedOption.dataset.price;
+                } else {
+                    productInfo.style.display = 'none';
+                    unitPriceInput.value = '';
+                }
+            });
+            
+            productLineIndex++;
+        });
+        
+        // Function to handle product type selection for specific index
+        function handleProductTypeSelectionForIndex(radio, index) {
+            const productLine = radio.closest('.product-line');
+            const existingSection = productLine.querySelector('.existing-product-section');
+            const newSection = productLine.querySelector('.new-product-section');
+            const productSelect = productLine.querySelector('.product-select');
+            const productInfo = productLine.querySelector('.product-info');
+            
+            if (radio.value === 'existing') {
+                existingSection.style.display = 'block';
+                newSection.style.display = 'none';
+                productSelect.setAttribute('required', 'required');
+                // Clear new product fields
+                newSection.querySelectorAll('input, select').forEach(input => {
+                    input.removeAttribute('required');
+                    if (input.type !== 'radio') input.value = '';
+                });
+            } else {
+                existingSection.style.display = 'none';
+                newSection.style.display = 'block';
+                productSelect.removeAttribute('required');
+                productInfo.style.display = 'none';
+                // Add required to new product fields
+                newSection.querySelectorAll('input[type="text"], select').forEach(input => {
+                    input.setAttribute('required', 'required');
+                });
+            }
+        }
+        
+        // Remove product line
+        document.getElementById('product-lines').addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-product-line')) {
+                e.target.closest('.product-line').remove();
+            }
+        });
+    });
+</script>

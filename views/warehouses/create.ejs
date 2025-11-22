@@ -1,0 +1,26 @@
+<%- include('../partials/flash') %>
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Create Warehouse</h1>
+</div>
+
+<div class="col-lg-6 col-md-8 mx-auto">
+    <form action="/warehouses/create" method="POST">
+        <div class="mb-3">
+            <label for="name" class="form-label">Warehouse Name</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        <div class="mb-3">
+            <label for="location" class="form-label">Location</label>
+            <input type="text" class="form-control" id="location" name="location" required>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+        </div>
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary">Add Warehouse</button>
+            <a href="/warehouses" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,218 @@
+<%- include('../partials/flash') %>
+
+<div class="container mt-5">
+    <h1>Create Delivery</h1>
+    
+    <form action="/deliveries/create" method="POST">
+        <div class="mb-3">
+            <label for="documentNumber" class="form-label">Document Number</label>
+            <input type="text" class="form-control" id="documentNumber" name="documentNumber" value="<%= documentNumber %>" required>
+        </div>
+        
+        <div class="mb-3">
+            <label for="customerName" class="form-label">Customer Name</label>
+            <input type="text" class="form-control" id="customerName" name="customerName" required>
+        </div>
+        
+        <div class="mb-3">
+            <label for="warehouse" class="form-label">Warehouse</label>
+            <select class="form-select" id="warehouse" name="warehouse" required>
+                <option value="">Select Warehouse</option>
+                <% warehouses.forEach(warehouse => { %>
+                    <option value="<%= warehouse._id %>"><%= warehouse.name %></option>
+                <% }) %>
+            </select>
+        </div>
+        
+        <div class="mb-3">
+            <h4>Products</h4>
+            <div id="products-container">
+                <div class="product-line mb-3 border p-3">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label class="form-label">Product</label>
+                            <select class="form-select product-select" name="products[0][id]" required>
+                                <option value="">Select Product</option>
+                                <% products.forEach(product => { %>
+                                    <option value="<%= product._id %>" data-price="<%= product.price %>">
+                                        <%= product.name %>
+                                    </option>
+                                <% }) %>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Quantity</label>
+                            <input type="number" class="form-control quantity-input" name="products[0][quantity]" min="1" required>
+                            <small class="available-quantity text-muted">Available: 0</small>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Unit Price</label>
+                            <input type="number" class="form-control unit-price-input" name="products[0][unitPrice]" step="0.01" required readonly>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="button" class="btn btn-danger remove-product">Remove</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="button" id="add-product" class="btn btn-secondary">Add Product</button>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Create Delivery</button>
+        <a href="/deliveries" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<div id="inventory-map-data" style="display:none;"><%- JSON.stringify(inventoryMap) %></div>
+<div id="products-data" style="display:none;"><%- JSON.stringify(products) %></div>
+
+<script>
+    let productIndex = 1;
+    const inventoryMap = JSON.parse(document.getElementById('inventory-map-data').textContent);
+    const productsData = JSON.parse(document.getElementById('products-data').textContent);
+    
+    function updateUnitPrice(select) {
+        const price = select.options[select.selectedIndex].getAttribute('data-price');
+        const available = select.options[select.selectedIndex].getAttribute('data-available');
+        const productLine = select.closest('.product-line');
+        const unitPriceInput = productLine.querySelector('.unit-price-input');
+        const availableSpan = productLine.querySelector('.available-quantity');
+        const quantityInput = productLine.querySelector('.quantity-input');
+        
+        unitPriceInput.value = price || '';
+        availableSpan.textContent = `Available: ${available || 0}`;
+        
+        // Update max quantity based on available stock
+        if (available && parseInt(available) > 0) {
+            quantityInput.max = available;
+        } else {
+            quantityInput.max = '';
+        }
+    }
+    
+    function updateAvailableQuantities() {
+        const warehouseSelect = document.getElementById('warehouse');
+        const selectedWarehouse = warehouseSelect.value;
+        
+        // Update all product select dropdowns
+        document.querySelectorAll('.product-select').forEach(select => {
+            const currentValue = select.value;
+            select.innerHTML = '<option value="">Select Product</option>';
+            
+            productsData.forEach(product => {
+                const key = product._id + '-' + selectedWarehouse;
+                const inventory = inventoryMap[key] || { available: 0 };
+                
+                const option = document.createElement('option');
+                option.value = product._id;
+                option.setAttribute('data-price', product.price);
+                option.setAttribute('data-available', inventory.available);
+                option.textContent = product.name;
+                
+                // Only show available quantity if warehouse is selected
+                if (selectedWarehouse) {
+                    option.textContent += ' (Available: ' + inventory.available + ')';
+                }
+                
+                if (currentValue === product._id) {
+                    option.selected = true;
+                }
+                
+                select.appendChild(option);
+            });
+            
+            // Update unit price and available quantity for the selected product
+            if (currentValue) {
+                updateUnitPrice(select);
+            }
+        });
+    }
+    
+    // Update available quantities when warehouse changes
+    document.getElementById('warehouse').addEventListener('change', updateAvailableQuantities);
+    
+    // Add event listeners to existing product selects
+    document.querySelectorAll('.product-select').forEach(select => {
+        select.addEventListener('change', function() {
+            updateUnitPrice(this);
+        });
+    });
+    
+    // Add event listeners to existing quantity inputs for validation
+    document.querySelectorAll('.quantity-input').forEach(input => {
+        input.addEventListener('input', function() {
+            const max = parseInt(this.max);
+            const value = parseInt(this.value);
+            if (max && value > max) {
+                this.value = max;
+                alert('Quantity cannot exceed available stock!');
+            }
+        });
+    });
+    
+    document.getElementById('add-product').addEventListener('click', function() {
+        const container = document.getElementById('products-container');
+        const newProductLine = document.createElement('div');
+        newProductLine.className = 'product-line mb-3 border p-3';
+        newProductLine.innerHTML = `
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="form-label">Product</label>
+                    <select class="form-select product-select" name="products[${productIndex}][id]" required>
+                        <option value="">Select Product</option>
+                        <% products.forEach(product => { %>
+                            <option value="<\%= product._id \%>" data-price="<\%= product.price \%>" data-available="0">
+                                <\%= product.name \%>
+                            </option>
+                        <% }) %>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Quantity</label>
+                    <input type="number" class="form-control quantity-input" name="products[${productIndex}][quantity]" min="1" required>
+                    <small class="available-quantity text-muted">Available: 0</small>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Unit Price</label>
+                    <input type="number" class="form-control unit-price-input" name="products[${productIndex}][unitPrice]" step="0.01" required readonly>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="button" class="btn btn-danger remove-product">Remove</button>
+                </div>
+            </div>
+        `;
+        
+        // Add event listeners to the new elements
+        const newSelect = newProductLine.querySelector('.product-select');
+        newSelect.addEventListener('change', function() {
+            updateUnitPrice(this);
+        });
+        
+        const newQuantityInput = newProductLine.querySelector('.quantity-input');
+        newQuantityInput.addEventListener('input', function() {
+            const max = parseInt(this.max);
+            const value = parseInt(this.value);
+            if (max && value > max) {
+                this.value = max;
+                alert('Quantity cannot exceed available stock!');
+            }
+        });
+        
+        container.appendChild(newProductLine);
+        productIndex++;
+        
+        // Update available quantities for the new select
+        updateAvailableQuantities();
+    });
+    
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-product')) {
+            e.target.closest('.product-line').remove();
+        }
+    });
+    
+    // Initialize available quantities on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        updateAvailableQuantities();
+    });
+</script>

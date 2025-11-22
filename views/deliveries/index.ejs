@@ -1,0 +1,56 @@
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Delivery Orders</h1>
+        <a href="/deliveries/create" class="btn btn-primary">Create New Delivery</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Document Number</th>
+                    <th>Customer</th>
+                    <th>Warehouse</th>
+                    <th>Status</th>
+                    <th>Created By</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (deliveries.length > 0) { %>
+                    <% deliveries.forEach(delivery => { %>
+                        <tr>
+                            <td><%= delivery.documentNumber %></td>
+                            <td><%= delivery.customerName %></td>
+                            <td><%= delivery.warehouse ? delivery.warehouse.name : 'N/A' %></td>
+                            <td>
+                                <span class="badge <%= delivery.status === 'pending' ? 'bg-warning' : 'bg-success' %>">
+                                    <%= delivery.status %>
+                                </span>
+                            </td>
+                            <td><%= delivery.createdBy ? delivery.createdBy.name : 'N/A' %></td>
+                            <td><%= moment(delivery.createdAt).format('YYYY-MM-DD HH:mm') %></td>
+                            <td>
+                                <a href="/deliveries/<%= delivery._id %>" class="btn btn-info btn-sm">View</a>
+                                <a href="/deliveries/<%= delivery._id %>/download" class="btn btn-primary btn-sm">Download PDF</a>
+                                <% if (delivery.status === 'pending') { %>
+                                    <form action="/deliveries/<%= delivery._id %>/validate" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-success btn-sm">Validate</button>
+                                    </form>
+                                <% } %>
+                                <form action="/deliveries/<%= delivery._id %>/delete" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this delivery?');">
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="7">No delivery orders found.</td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>

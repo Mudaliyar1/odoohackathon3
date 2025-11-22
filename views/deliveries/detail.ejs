@@ -1,0 +1,101 @@
+<div class="container mt-4">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20mm;
+        }
+        h1, h4 {
+            color: #333;
+        }
+        .card {
+            border: 1px solid #eee;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+            font-weight: bold;
+        }
+        .card-body {
+            padding: 15px;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .table th, .table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .table th {
+            background-color: #f2f2f2;
+        }
+        .badge {
+            padding: 5px 10px;
+            border-radius: 3px;
+            color: white;
+        }
+        .bg-warning { background-color: #ffc107; }
+        .bg-success { background-color: #28a745; }
+        /* Hide buttons in PDF */
+        .mt-4 a.btn, .mt-4 form button.btn {
+            display: none;
+        }
+    </style>
+    <h1 class="mb-4">Delivery Order Details</h1>
+    <div class="card">
+        <div class="card-header">
+            Delivery #<%= delivery.documentNumber %>
+        </div>
+        <div class="card-body">
+            <p><strong>Customer:</strong> <%= delivery.customerName %></p>
+            <p><strong>Warehouse:</strong> <%= delivery.warehouse ? delivery.warehouse.name : 'N/A' %></p>
+            <p><strong>Status:</strong> 
+                <span class="badge <%= delivery.status === 'pending' ? 'bg-warning' : 'bg-success' %>">
+                    <%= delivery.status %>
+                </span>
+            </p>
+            <p><strong>Created By:</strong> <%= delivery.createdBy ? delivery.createdBy.name : 'N/A' %></p>
+            <p><strong>Created At:</strong> <%= moment(delivery.createdAt).format('YYYY-MM-DD HH:mm') %></p>
+            <% if (delivery.status === 'delivered') { %>
+                <p><strong>Validated By:</strong> <%= delivery.validatedBy ? delivery.validatedBy.name : 'N/A' %></p>
+                <p><strong>Validation Date:</strong> <%= moment(delivery.validationDate).format('YYYY-MM-DD HH:mm') %></p>
+            <% } %>
+
+            <h4 class="mt-4">Product Lines</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>SKU</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% delivery.lines.forEach(line => { %>
+                            <tr>
+                                <td><%= line.product ? line.product.name : 'N/A' %></td>
+                                <td><%= line.product ? line.product.sku : 'N/A' %></td>
+                                <td><%= line.quantity %></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4">
+                <a href="/deliveries" class="btn btn-secondary">Back to Delivery Orders</a>
+                <% if (delivery.status === 'pending') { %>
+                    <form action="/deliveries/<%= delivery._id %>/validate" method="POST" class="d-inline ms-2">
+                        <button type="submit" class="btn btn-success">Validate Delivery</button>
+                    </form>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,66 @@
+<%- include('../partials/flash') %>
+
+<div class="container mt-4">
+    <h1 class="mb-4">Dashboard</h1>
+
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="card text-white bg-primary shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Total Products</h5>
+                    <p class="card-text display-4"><%= totalProducts %></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card text-white bg-success shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Total Warehouses</h5>
+                    <p class="card-text display-4"><%= totalWarehouses %></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card text-white bg-info shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Total Inventory Items</h5>
+                    <p class="card-text display-4"><%= totalInventoryItems %></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card text-white bg-warning shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Pending Receipts</h5>
+                    <p class="card-text display-4"><%= pendingReceipts %></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card text-white bg-danger shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Pending Deliveries</h5>
+                    <p class="card-text display-4"><%= pendingDeliveries %></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card text-white bg-secondary shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Pending Transfers</h5>
+                    <p class="card-text display-4"><%= pendingTransfers %></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card text-white bg-dark shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Pending Adjustments</h5>
+                    <p class="card-text display-4"><%= pendingAdjustments %></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add more dashboard content here, e.g., charts, recent activities -->
+</div>

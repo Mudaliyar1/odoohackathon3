@@ -1,0 +1,24 @@
+<%- include('../partials/flash') %>
+
+<div class="container mt-4">
+    <h1 class="mb-4">Product Details</h1>
+
+    <div class="card">
+        <div class="card-header">
+            Product: <%= product.name %>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">SKU: <%= product.sku %></h5>
+            <p class="card-text"><strong>Category:</strong> <%= product.category %></p>
+            <p class="card-text"><strong>Unit of Measure:</strong> <%= product.unitOfMeasure %></p>
+            <p class="card-text"><strong>Price:</strong> $<%= product.price %></p>
+            <p class="card-text"><strong>Quantity:</strong> <%= product.quantity %></p>
+            <p class="card-text"><strong>Reorder Level:</strong> <%= product.reorderLevel %></p>
+            <p class="card-text"><strong>Warehouse:</strong> <%= product.warehouse ? product.warehouse.name : 'N/A' %></p>
+            <p class="card-text"><strong>Created At:</strong> <%= product.createdAt.toDateString() %></p>
+            <p class="card-text"><strong>Last Updated:</strong> <%= product.updatedAt.toDateString() %></p>
+            <a href="/products/<%= product._id %>/edit" class="btn btn-warning">Edit Product</a>
+            <a href="/products" class="btn btn-secondary">Back to Product List</a>
+        </div>
+    </div>
+</div>

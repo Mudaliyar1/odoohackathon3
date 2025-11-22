@@ -1,0 +1,54 @@
+<div class="container mt-4">
+    <h1 class="mb-4">Internal Transfer Details</h1>
+    <div class="card">
+        <div class="card-header">
+            Transfer #<%= transfer.documentNumber %>
+        </div>
+        <div class="card-body">
+            <p><strong>Source Warehouse:</strong> <%= transfer.sourceWarehouse ? transfer.sourceWarehouse.name : 'N/A' %></p>
+            <p><strong>Destination Warehouse:</strong> <%= transfer.destinationWarehouse ? transfer.destinationWarehouse.name : 'N/A' %></p>
+            <p><strong>Status:</strong> 
+                <span class="badge <%= transfer.status === 'pending' ? 'bg-warning' : 'bg-success' %>">
+                    <%= transfer.status %>
+                </span>
+            </p>
+            <p><strong>Created By:</strong> <%= transfer.createdBy ? transfer.createdBy.name : 'N/A' %></p>
+            <p><strong>Created At:</strong> <%= moment(transfer.createdAt).format('YYYY-MM-DD HH:mm') %></p>
+            <% if (transfer.status === 'completed') { %>
+                <p><strong>Validated By:</strong> <%= transfer.validatedBy ? transfer.validatedBy.name : 'N/A' %></p>
+                <p><strong>Validation Date:</strong> <%= moment(transfer.validationDate).format('YYYY-MM-DD HH:mm') %></p>
+            <% } %>
+
+            <h4 class="mt-4">Product Lines</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>SKU</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% transfer.lines.forEach(line => { %>
+                            <tr>
+                                <td><%= line.product ? line.product.name : 'N/A' %></td>
+                                <td><%= line.product ? line.product.sku : 'N/A' %></td>
+                                <td><%= line.quantity %></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4">
+                <a href="/internalTransfers" class="btn btn-secondary">Back to Internal Transfers</a>
+                <% if (transfer.status === 'pending') { %>
+                    <form action="/internalTransfers/<%= transfer._id %>/validate" method="POST" class="d-inline ms-2">
+                        <button type="submit" class="btn btn-success">Validate Transfer</button>
+                    </form>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>

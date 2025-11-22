@@ -1,0 +1,33 @@
+<div class="row mt-5">
+    <div class="col-md-6 m-auto">
+        <div class="card card-body">
+            <h1 class="text-center mb-3">Verify OTP</h1>
+            <%- include ('../partials/flash') %>
+            <form action="/auth/verify-otp" method="POST">
+                <div class="form-group mb-3">
+                    <label for="email">Email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        class="form-control"
+                        placeholder="Enter Email"
+                        value="<%= typeof email != 'undefined' ? email : '' %>"
+                    />
+                </div>
+                <div class="form-group mb-3">
+                    <label for="otp">OTP</label>
+                    <input
+                        type="text"
+                        id="otp"
+                        name="otp"
+                        class="form-control"
+                        placeholder="Enter OTP"
+                        value="<%= typeof otp != 'undefined' ? otp : '' %>"
+                    />
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Verify OTP</button>
+            </form>
+        </div>
+    </div>
+</div>

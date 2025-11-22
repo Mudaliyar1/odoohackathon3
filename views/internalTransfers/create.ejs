@@ -1,0 +1,199 @@
+<div class="container mt-4">
+    <h1 class="mb-4">Create New Internal Transfer</h1>
+    <form action="/internalTransfers/create" method="POST">
+
+        <div class="mb-3">
+            <label for="sourceWarehouse" class="form-label">Source Warehouse</label>
+            <select class="form-control" id="sourceWarehouse" name="sourceWarehouse" required>
+                <option value="">Select Source Warehouse</option>
+                <% warehouses.forEach(warehouse => { %>
+                    <option value="<%= warehouse._id %>"><%= warehouse.name %></option>
+                <% }) %>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="destinationWarehouse" class="form-label">Destination Warehouse</label>
+            <select class="form-control" id="destinationWarehouse" name="destinationWarehouse" required>
+                <option value="">Select Destination Warehouse</option>
+                <% warehouses.forEach(warehouse => { %>
+                    <option value="<%= warehouse._id %>"><%= warehouse.name %></option>
+                <% }) %>
+            </select>
+        </div>
+        <div id="inventory-info" class="alert alert-info" style="display: none;">
+            <strong>Available Quantities in Source Warehouse:</strong>
+            <div id="inventory-details"></div>
+        </div>
+        <div id="product-lines">
+            <h4 class="mt-4">Product Lines</h4>
+            <button type="button" class="btn btn-secondary mb-3" id="add-product-line">Add Product</button>
+            <div class="product-line card card-body mb-3">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="product-0" class="form-label">Product</label>
+                        <select class="form-control product-select" id="product-0" name="products[0][id]" required>
+                            <option value="">Select Product</option>
+                            <% products.forEach(product => { %>
+                                <option value="<%= product._id %>" data-available="0"><%= product.name %> (<%= product.sku %>)</option>
+                            <% }) %>
+                        </select>
+                        <small class="text-muted available-qty" id="available-qty-0">Available: 0</small>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="quantity-0" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" id="quantity-0" name="products[0][quantity]" min="1" required>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Create Internal Transfer</button>
+        <a href="/internalTransfers" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<script>
+    // Inventory data from server
+    const inventoryMap = JSON.parse('<%- JSON.stringify(inventoryMap) %>');
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        let productLineIndex = 1;
+        
+        // Function to update available quantities
+        function updateAvailableQuantities() {
+            const sourceWarehouse = document.getElementById('sourceWarehouse').value;
+            const inventoryInfo = document.getElementById('inventory-info');
+            const inventoryDetails = document.getElementById('inventory-details');
+            
+            if (!sourceWarehouse) {
+                inventoryInfo.style.display = 'none';
+                // Reset all available quantities to 0
+                document.querySelectorAll('.available-qty').forEach(qty => {
+                    qty.textContent = 'Available: 0';
+                });
+                
+                // Add form submission validation
+                document.querySelector('form').addEventListener('submit', function(e) {
+                    const sourceWarehouse = document.getElementById('sourceWarehouse').value;
+                    let hasError = false;
+                    
+                    // Check each product line
+                    document.querySelectorAll('.product-line').forEach((line, index) => {
+                        const productSelect = line.querySelector('.product-select');
+                        const quantityInput = line.querySelector('.quantity-input');
+                        const availableQtySpan = document.getElementById(`available-qty-${index}`);
+                        
+                        if (productSelect.value && quantityInput.value) {
+                            const available = parseInt(availableQtySpan.textContent) || 0;
+                            const requested = parseInt(quantityInput.value) || 0;
+                            
+                            if (requested > available) {
+                                alert(`Insufficient quantity for product in line ${index + 1}. Available: ${available}, Requested: ${requested}`);
+                                hasError = true;
+                            }
+                        }
+                    });
+                    
+                    if (hasError) {
+                        e.preventDefault();
+                    }
+                });
+                document.querySelectorAll('.product-select option').forEach(option => {
+                    option.setAttribute('data-available', '0');
+                });
+                return;
+            }
+            
+            // Show inventory info
+            inventoryInfo.style.display = 'block';
+            inventoryDetails.innerHTML = '';
+            
+            // Update available quantities for each product
+            document.querySelectorAll('.product-select').forEach(select => {
+                const selectedOption = select.options[select.selectedIndex];
+                const productId = select.value;
+                
+                if (productId) {
+                    const key = `${productId}-${sourceWarehouse}`;
+                    const inventory = inventoryMap[key];
+                    const available = inventory ? inventory.available : 0;
+                    
+                    // Update the available quantity display
+                    const availableQtyElement = select.closest('.product-line').querySelector('.available-qty');
+                    if (availableQtyElement) {
+                        availableQtyElement.textContent = `Available: ${available}`;
+                    }
+                    
+                    // Update option data
+                    for (let option of select.options) {
+                        const optionProductId = option.value;
+                        if (optionProductId) {
+                            const optionKey = `${optionProductId}-${sourceWarehouse}`;
+                            const optionInventory = inventoryMap[optionKey];
+                            const optionAvailable = optionInventory ? optionInventory.available : 0;
+                            option.setAttribute('data-available', optionAvailable);
+                        }
+                    }
+                    
+                    // Add to inventory details
+                    if (inventory && inventory.available > 0) {
+                        const productName = selectedOption.textContent.split(' (')[0];
+                        inventoryDetails.innerHTML += `<div>${productName}: ${inventory.available} available</div>`;
+                    }
+                }
+            });
+            
+            // Hide inventory info if no products have quantity
+            if (inventoryDetails.innerHTML === '') {
+                inventoryInfo.style.display = 'none';
+            }
+        }
+        
+        // Add event listeners for warehouse changes
+        document.getElementById('sourceWarehouse').addEventListener('change', updateAvailableQuantities);
+        
+        // Add event listeners for product changes
+        document.addEventListener('change', (e) => {
+            if (e.target.classList.contains('product-select')) {
+                updateAvailableQuantities();
+            }
+        });
+        
+        // Initial update
+        updateAvailableQuantities();
+        
+        document.getElementById('add-product-line').addEventListener('click', () => {
+            const productLinesDiv = document.getElementById('product-lines');
+            const newProductLine = document.createElement('div');
+            newProductLine.classList.add('product-line', 'card', 'card-body', 'mb-3');
+            newProductLine.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="product-${productLineIndex}" class="form-label">Product</label>
+                        <select class="form-control product-select" id="product-${productLineIndex}" name="products[${productLineIndex}][id]" required>
+                            <option value="">Select Product</option>
+                            <% products.forEach(product => {
+                                if (product && product._id && product.name && product.sku) { %>
+                                    <option value="<\%= product._id \%>" data-available="0"><\%= product.name \%> (<\%= product.sku \%>)</option>
+                                <% } %>
+                            <% }) %>
+                        </select>
+                        <small class="text-muted available-qty" id="available-qty-${productLineIndex}">Available: 0</small>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="quantity-${productLineIndex}" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" id="quantity-${productLineIndex}" name="products[${productLineIndex}][quantity]" min="1" required>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-danger btn-sm remove-product-line">Remove</button>
+            `;
+            productLinesDiv.appendChild(newProductLine);
+            productLineIndex++;
+        });
+
+        document.getElementById('product-lines').addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-product-line')) {
+                e.target.closest('.product-line').remove();
+            }
+        });
+    });
+</script>

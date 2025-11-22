@@ -1,0 +1,56 @@
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Receipts</h1>
+        <a href="/receipts/create" class="btn btn-primary">Add New Receipt</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Document Number</th>
+                    <th>Supplier</th>
+                    <th>Warehouse</th>
+                    <th>Status</th>
+                    <th>Created By</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (receipts.length > 0) { %>
+                    <% receipts.forEach(receipt => { %>
+                        <tr>
+                            <td><%= receipt.documentNumber %></td>
+                            <td><%= receipt.supplierName %></td>
+                            <td><%= receipt.warehouse ? receipt.warehouse.name : 'N/A' %></td>
+                            <td>
+                                <span class="badge <%= receipt.status === 'pending' ? 'bg-warning' : 'bg-success' %>">
+                                    <%= receipt.status %>
+                                </span>
+                            </td>
+                            <td><%= receipt.createdBy ? receipt.createdBy.name : 'N/A' %></td>
+                            <td><%= moment(receipt.createdAt).format('YYYY-MM-DD HH:mm') %></td>
+                            <td>
+                                <a href="/receipts/<%= receipt._id %>" class="btn btn-info btn-sm">View</a>
+                                <a href="/receipts/<%= receipt._id %>/download" class="btn btn-primary btn-sm" target="_blank">Download PDF</a>
+                                <% if (receipt.status === 'pending') { %>
+                                    <form action="/receipts/<%= receipt._id %>/validate" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-success btn-sm">Validate</button>
+                                    </form>
+                                <% } %>
+                                <form action="/receipts/<%= receipt._id %>/delete" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this receipt?');">
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="7">No receipts found.</td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,74 @@
+<%- include('../partials/flash') %>
+
+<div class="container mt-4">
+    <h1 class="mb-4">Stock Screen</h1>
+
+    <div class="card mb-4">
+        <div class="card-header">Filters</div>
+        <div class="card-body">
+            <form action="/stock" method="GET" class="row g-3">
+                <div class="col-md-4">
+                    <label for="search" class="form-label">Search Product</label>
+                    <input type="text" class="form-control" id="search" name="search" value="<%= selectedSearch %>" placeholder="Product Name or SKU">
+                </div>
+                <div class="col-md-4">
+                    <label for="warehouse" class="form-label">Warehouse</label>
+                    <select class="form-select" id="warehouse" name="warehouse">
+                        <option value="">All Warehouses</option>
+                        <% warehouses.forEach(warehouse => { %>
+                            <option value="<%= warehouse._id %>" <%= selectedWarehouse === warehouse._id.toString() ? 'selected' : '' %>><%= warehouse.name %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="category" class="form-label">Category</label>
+                    <input type="text" class="form-control" id="category" name="category" value="<%= selectedCategory %>" placeholder="Product Category">
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                    <a href="/stock" class="btn btn-secondary">Clear Filters</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">Current Stock</div>
+        <div class="card-body">
+            <% if (inventoryData.length > 0) { %>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>SKU</th>
+                                <th>Category</th>
+                                <th>Warehouse</th>
+                                <th>Location</th>
+                                <th>On Hand</th>
+                                <th>Reserved</th>
+                                <th>Available</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% inventoryData.forEach(item => { %>
+                                <tr>
+                                    <td><%= item.product.name %></td>
+                                    <td><%= item.product.sku %></td>
+                                    <td><%= item.product.category %></td>
+                                    <td><%= item.warehouse.name %></td>
+                                    <td><%= item.location ? item.location.name : 'N/A' %></td>
+                                    <td><%= item.onHand %></td>
+                                    <td><%= item.reserved %></td>
+                                    <td><%= item.available %></td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } else { %>
+                <p class="text-center">No stock data found matching your criteria.</p>
+            <% } %>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,55 @@
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Internal Transfers</h1>
+        <a href="/internalTransfers/create" class="btn btn-primary">Create New Transfer</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Document Number</th>
+                    <th>Source Warehouse</th>
+                    <th>Destination Warehouse</th>
+                    <th>Status</th>
+                    <th>Created By</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (transfers.length > 0) { %>
+                    <% transfers.forEach(transfer => { %>
+                        <tr>
+                            <td><%= transfer.documentNumber %></td>
+                            <td><%= transfer.fromWarehouse ? transfer.fromWarehouse.name : 'N/A' %></td>
+                            <td><%= transfer.toWarehouse ? transfer.toWarehouse.name : 'N/A' %></td>
+                            <td>
+                                <span class="badge <%= transfer.status === 'pending' ? 'bg-warning' : 'bg-success' %>">
+                                    <%= transfer.status %>
+                                </span>
+                            </td>
+                            <td><%= transfer.createdBy ? transfer.createdBy.name : 'N/A' %></td>
+                            <td><%= moment(transfer.createdAt).format('YYYY-MM-DD HH:mm') %></td>
+                            <td>
+                                <a href="/internalTransfers/<%= transfer._id %>" class="btn btn-info btn-sm">View</a>
+                                <% if (transfer.status === 'pending') { %>
+                                    <form action="/internalTransfers/<%= transfer._id %>/validate" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-success btn-sm">Validate</button>
+                                    </form>
+                                <% } %>
+                                <form action="/internalTransfers/<%= transfer._id %>/delete" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this internal transfer?');">
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="7">No internal transfers found.</td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>

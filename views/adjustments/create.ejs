@@ -1,0 +1,95 @@
+<%- include('../partials/flash') %>
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Create Stock Adjustment</h1>
+</div>
+
+<div class="col-lg-6 col-md-8 mx-auto">
+    <form action="/adjustments/create" method="POST">
+        <div class="mb-3">
+            <label for="documentNumber" class="form-label">Document Number</label>
+            <input type="text" class="form-control" id="documentNumber" name="documentNumber" required>
+        </div>
+        <div class="mb-3">
+            <label for="warehouse" class="form-label">Warehouse</label>
+            <select class="form-control" id="warehouse" name="warehouse" required>
+                <option value="">Select Warehouse</option>
+                <% warehouses.forEach(warehouse => { %>
+                    <option value="<%= warehouse._id %>"><%= warehouse.name %></option>
+                <% }); %>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="type" class="form-label">Adjustment Type</label>
+            <select class="form-control" id="type" name="type" required>
+                <option value="">Select Type</option>
+                <option value="in">In (Increase Stock)</option>
+                <option value="out">Out (Decrease Stock)</option>
+            </select>
+        </div>
+
+        <div id="product-lines">
+            <label class="form-label">Product Lines</label>
+            <div class="product-line mb-3 p-3 border rounded">
+                <div class="mb-3">
+                    <label for="product-0" class="form-label">Product</label>
+                    <select class="form-control product-select" id="product-0" name="products[0][id]" required>
+                        <option value="">Select Product</option>
+                        <% products.forEach(product => { %>
+                            <option value="<%= product._id %>"><%= product.name %> (<%= product.sku %>)</option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="quantity-0" class="form-label">Quantity</label>
+                    <input type="number" class="form-control" id="quantity-0" name="products[0][quantity]" min="1" required>
+                </div>
+                <button type="button" class="btn btn-danger btn-sm remove-product-line">Remove</button>
+            </div>
+        </div>
+        <button type="button" class="btn btn-secondary mb-3" id="add-product-line">Add Product Line</button>
+
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary">Create Adjustment</button>
+            <a href="/adjustments" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    let productLineIndex = 1;
+    document.getElementById('add-product-line').addEventListener('click', () => {
+        const productLinesDiv = document.getElementById('product-lines');
+        const newProductLine = document.createElement('div');
+        newProductLine.classList.add('product-line', 'mb-3', 'p-3', 'border', 'rounded');
+        newProductLine.innerHTML = `
+            <div class="mb-3">
+                <label for="product-${productLineIndex}" class="form-label">Product</label>
+                <select class="form-control product-select" id="product-${productLineIndex}" name="products[${productLineIndex}][id]" required>
+                    <option value="">Select Product</option>
+                    <% products.forEach(product => { %>
+                        <option value="<%= product._id %>">${product.name} (${product.sku})</option>
+                    <% }); %>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="quantity-${productLineIndex}" class="form-label">Quantity</label>
+                <input type="number" class="form-control" id="quantity-${productLineIndex}" name="products[${productLineIndex}][quantity]" min="1" required>
+            </div>
+            <button type="button" class="btn btn-danger btn-sm remove-product-line">Remove</button>
+        `;
+        productLinesDiv.appendChild(newProductLine);
+        productLineIndex++;
+        attachRemoveListeners();
+    });
+
+    function attachRemoveListeners() {
+        document.querySelectorAll('.remove-product-line').forEach(button => {
+            button.onclick = function() {
+                this.closest('.product-line').remove();
+            };
+        });
+    }
+
+    attachRemoveListeners(); // Attach listeners for initial product line
+</script>
