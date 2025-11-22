@@ -11,6 +11,8 @@ router.get('/kanban', ensureAuthenticated, productController.productKanban);
 
 router.post('/updateStatus', ensureAuthenticated, productController.updateProductStatus);
 
+router.get('/create', ensureAuthenticated, productController.productCreateGet);
+
 // Create product submission
 router.post('/create', ensureAuthenticated, productController.productCreatePost);
 
